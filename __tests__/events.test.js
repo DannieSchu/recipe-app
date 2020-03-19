@@ -5,6 +5,7 @@ const app = require('../lib/app');
 const connect = require('../lib/utils/connect');
 const mongoose = require('mongoose');
 const Event = require('../lib/models/Event');
+const Recipe = require('../lib/models/Recipe');
 
 describe('event routes', () => {
   beforeAll(() => {
@@ -19,33 +20,56 @@ describe('event routes', () => {
     return mongoose.connection.close();
   });
 
+  const cookies = {
+    name: 'cookies',
+    ingredients: [
+      { name: 'flour', amount: 1, measurement: 'cup' }
+    ],
+    directions: [
+      'preheat oven to 375',
+      'mix ingredients',
+      'put dough on cookie sheet',
+      'bake for 10 minutes'
+    ],
+  };
+
   it('creates an event', () => {
-    return request(app)
-      .post('/api/v1/events')
-      .send({
-        recipeId: '1234',
-        dateOfEvent: Date.now(),
-        notes: 'It went well',
-        rating: 4
-      })
-      .then(res => {
-        expect(res.body).toEqual({
-          _id: expect.any(String),
-          recipeId: '1234',
-          dateOfEvent: expect.any(String),
-          notes: 'It went well',
-          rating: 4,
-          __v: 0
-        });
+    // create Recipe collection
+    return Recipe.create(cookies)
+    // then for a recipe
+      .then(recipe => {
+        return request(app)
+        // create this event
+          .post('/api/v1/events')
+          .send({
+            recipeId: recipe.id,
+            dateOfEvent: Date.now(),
+            notes: 'It went well',
+            rating: 4
+          })
+          // expect to response to include the recipe id and the event info
+          .then(res => {
+            expect(res.body).toEqual({
+              _id: expect.any(String),
+              recipeId: recipe.id,
+              dateOfEvent: expect.any(String),
+              notes: 'It went well',
+              rating: 4,
+              __v: 0
+            });
+          });
       });
   });
 
   it('gets all events', async() => {
+    // create recipe instance
+    const recipe = await Recipe.create(cookies);
+    // create events 
     const events = await Event.create([
-      { recipeId: '1234', dateOfEvent: Date.now(), rating: 3 },
-      { recipeId: '3456', dateOfEvent: Date.now(), rating: 2 },
-      { recipeId: '2345', dateOfEvent: Date.now(), rating: 3 },
-      { recipeId: '6544', dateOfEvent: Date.now(), rating: 5 },
+      { recipeId: recipe.id, dateOfEvent: Date.now(), rating: 3 },
+      { recipeId: recipe.id, dateOfEvent: Date.now(), rating: 2 },
+      { recipeId: recipe.id, dateOfEvent: Date.now(), rating: 3 },
+      { recipeId: recipe.id, dateOfEvent: Date.now(), rating: 5 },
     ]);
 
     return request(app)
@@ -58,8 +82,9 @@ describe('event routes', () => {
   });
 
   it('gets an event by id', async() => {
+    const recipe = await Recipe.create(cookies);
     const event = await Event.create({
-      recipeId: '1234',
+      recipeId: recipe.id,
       dateOfEvent: Date.now(),
       notes: 'It went well',
       rating: 4
@@ -70,7 +95,7 @@ describe('event routes', () => {
       .then(res => {
         expect(res.body).toEqual({
           _id: expect.any(String),
-          recipeId: '1234',
+          recipeId: recipe.id,
           dateOfEvent: expect.any(String),
           notes: 'It went well',
           rating: 4,
@@ -80,8 +105,9 @@ describe('event routes', () => {
   });
 
   it('updates an event by id', async() => {
+    const recipe = await Recipe.create(cookies);
     const event = await Event.create({
-      recipeId: '1234',
+      recipeId: recipe.id,
       dateOfEvent: Date.now(),
       notes: 'It went well',
       rating: 4
@@ -93,7 +119,7 @@ describe('event routes', () => {
       .then(res => {
         expect(res.body).toEqual({
           _id: expect.any(String),
-          recipeId: '1234',
+          recipeId: recipe.id,
           dateOfEvent: expect.any(String),
           notes: 'It went well',
           rating: 5,
@@ -103,8 +129,9 @@ describe('event routes', () => {
   });
 
   it('deletes an event by id', async() => {
+    const recipe = await Recipe.create(cookies);
     const event = await Event.create({
-      recipeId: '1234',
+      recipeId: recipe.id,
       dateOfEvent: Date.now(),
       notes: 'It went well',
       rating: 4
@@ -115,7 +142,7 @@ describe('event routes', () => {
       .then(res => {
         expect(res.body).toEqual({
           _id: expect.any(String),
-          recipeId: '1234',
+          recipeId: recipe.id,
           dateOfEvent: expect.any(String),
           notes: 'It went well',
           rating: 4,

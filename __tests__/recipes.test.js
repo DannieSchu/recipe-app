@@ -5,6 +5,7 @@ const app = require('../lib/app');
 const connect = require('../lib/utils/connect');
 const mongoose = require('mongoose');
 const Recipe = require('../lib/models/Recipe');
+const Event = require('../lib/models/Event');
 
 describe('recipe routes', () => {
   beforeAll(() => {

@@ -86,9 +86,17 @@ describe('recipe routes', () => {
       ],
     });
 
+    await Event.create([
+      { recipeId: recipe.id, dateOfEvent: Date.now(), rating: 3 },
+      { recipeId: recipe.id, dateOfEvent: Date.now(), rating: 2 },
+      { recipeId: recipe.id, dateOfEvent: Date.now(), rating: 3 },
+      { recipeId: recipe.id, dateOfEvent: Date.now(), rating: 5 }
+    ]);
+
     return request(app)
       .get(`/api/v1/recipes/${recipe._id}`)
       .then(res => {
+        expect(res.body.events).toHaveLength(4);
         expect(res.body).toEqual({
           _id: expect.any(String),
           name: 'cookies',
@@ -101,6 +109,7 @@ describe('recipe routes', () => {
             'put dough on cookie sheet',
             'bake for 10 minutes'
           ],
+          events: expect.any(Array),
           __v: 0
         });
       });

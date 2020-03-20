@@ -179,41 +179,7 @@ describe('event routes', () => {
       });
   });
 
-  it.skip('deletes an event by id', async() => {
-    // return Recipe.create({
-    //   name: 'cookies',
-    //   ingredients: [
-    //     { name: 'flour', amount: 1, measurement: 'cup' }
-    //   ],
-    //   directions: [
-    //     'preheat oven to 375',
-    //     'mix ingredients',
-    //     'put dough on cookie sheet',
-    //     'bake for 10 minutes'
-    //   ],
-    // })
-    //   .then(recipe => {
-    //     return Event.create({
-    //       recipeId: recipe.id,
-    //       dateOfEvent: Date.now(),
-    //       notes: 'It went well',
-    //       rating: 4
-    //     });
-    //   })
-    //   .then(event => {
-    //     return request(app)
-    //       .delete(`/api/v1/events/${event._id}`);
-    //   })
-    //   .then(res => {
-    //     expect(res.body).toEqual({
-    //       _id: expect.any(String),
-    //       recipeId: recipe.id,
-    //       dateOfEvent: expect.any(String),
-    //       notes: 'It went well',
-    //       rating: 4,
-    //       __v: 0
-    //     });
-    //   });
+  it('deletes an event by id', async() => {
     const recipe = await Recipe.create({
       name: 'cookies',
       ingredients: [
